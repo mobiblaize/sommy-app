@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 //Message schema
 const messageSchema = mongoose.Schema({
     name: {
-        type: String
+        type: String,
+        required: true
     },
     email: {
         type: String
@@ -32,37 +33,23 @@ module.exports.getMessageById = (id, callback) => {
     Message.findById(id, callback);
 }
 
-module.exports.getMessagesByName = (name, callback) => {
-    const query = {name};
-    Message.find(query, callback);
+module.exports.getMessagesByName = async (name, callback) => {
+    await Message.find({name}, callback);
 }
 
 module.exports.getMessagesBySearch = async (term, callback) => {
-    try {
-        await Message.find({$or: [
-            { name: { $regex: term, $options: "i" } },
-            { email: { $regex: term, $options: "i" } },
-            { message: { $regex: term, $options: "i" } }
-        ] }, callback);
-      } catch (err) {
-        console.log('Error occured');
-      }
+    await Message.find({$or: [
+        { name: { $regex: term, $options: "i" } },
+        { email: { $regex: term, $options: "i" } },
+        { message: { $regex: term, $options: "i" } }
+    ] }, callback);
 }
     
 
 module.exports.getAllMessages = async (callback) => {
-    try {
-        await Message.find({}, callback);
-      } catch (err) {
-        throw err;
-      }
+    await Message.find({}, callback);
 }
 
 module.exports.addMessage = async (newMessage, callback) => {
-    try {
-        await newMessage.save(callback);
-        } 
-    catch (err) {
-        throw err;
-    }
+    await newMessage.save(callback);
 }

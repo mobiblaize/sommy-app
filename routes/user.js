@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Message = require('../models/Message');
+const Post = require('../models/Post');
+const moment = require('moment');
 
 router.post('/order', (req, res) => {
     let { name, phone, email, location, pastries, description, deliveryDate } = req.body;
@@ -26,6 +28,9 @@ router.post('/order', (req, res) => {
     }
     if (!deliveryDate) {
         errors.push( {text: 'please add a delivery date' });
+    }
+    if (moment().isAfter(deliveryDate)) {
+        errors.push( {text: 'Delivery date must be at least 1 day after placing your order' });
     }
 
     //Check for errors
@@ -68,7 +73,7 @@ router.post('/message', (req, res) => {
         errors.push( {text: 'please add your email' });
     }
     if (!findUs) {
-        errors.push( {text: 'please select a source' });
+        errors.push( {text: 'Tell us how you found us' });
     }
     if (!message) {
         errors.push( {text: "you haven't entered your message" });
@@ -92,12 +97,22 @@ router.post('/message', (req, res) => {
 
         Message.addMessage(newMessage, (err) => {
             if(err) {
-                res.json({success: false, msg: 'Failed to register user'});
+                res.json({success: false, msg: 'Failed to send your feedback'});
             } else {
-                res.json({success: true, msg: 'User registered'});
+                res.json({success: true, msg: 'Thanks for your feedback'});
             }
         })
         }
 });
+
+router.get('/posts', (req, res) => 
+    Post.getAllPosts((err, posts) => {
+        if (err) {
+            throw err;
+        } else {
+            return res.json({ posts });
+        }
+    })
+)
 
 module.exports = router;

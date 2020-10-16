@@ -27,32 +27,30 @@ module.exports.getAdminById = (id, callback) => {
 }
 
 module.exports.getAdminByEmail = (email, callback) => {
-    const query = {email};
-    Admin.findOne(query, callback);
+    Admin.findOne({email}, callback);
 }
 
-module.exports.getAllAdmins = async (callback) => {
+module.exports.getAllAdmins = (callback) => {
     try {
-        await Admin.find({}, callback);
+        Admin.find({}, callback);
       } catch (err) {
-        throw err;
+        callback(err);
       }
 }
 
 module.exports.addAdmin = async (newAdmin, callback) => {
     try {
-        const hashedPassword = await bcrypt.hash(newAdmin.password, 10)
+        let hashedPassword = await bcrypt.hash(newAdmin.password, 10)
         newAdmin.password = hashedPassword;
         newAdmin.save(callback);
         } 
     catch (err) {
-        throw err;
+        callback(err);
     }
 }
 
 module.exports.comparePassword = async (candidatePassword, hash, callback) => {
     await bcrypt.compare(candidatePassword, hash, (err, isMatch) => {
-        if (err) console.log('There was an error');
-        callback(null, isMatch);
+        callback(err, isMatch);
     });
 }

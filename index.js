@@ -30,21 +30,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Cors middleware
 app.use(cors());
+
 //BodyParser middleware
 app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
-require('./config/passport')(passport)
-
-app.use(passport.initialize());
-app.use(passport.session());
-// require('./config/passport')(passport)
+require('./config/passport')(passport);
 
 //Client routes
 app.use('/', require('./routes/user'));
 //admin routes
-app.use('/admin', require('./routes/admin'));
+app.use('/admins', require('./routes/admin'));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+})
 
 //Start server
 app.listen(PORT, () => {

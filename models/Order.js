@@ -41,42 +41,43 @@ const orderSchema = mongoose.Schema({
     },
 });
 
-
 const Order = module.exports = mongoose.model('Order', orderSchema);
 
 module.exports.getOrderById = (id, callback) => {
     Order.findById(id, callback);
 }
 
+module.exports.updateDelivery = async (id, delivered, callback) => {
+    try {
+        let res = await Order.findOneAndUpdate({_id: id}, { delivered }, {
+            new: true,
+            upsert: true,
+            rawResult: true,
+            useFindAndModify: false
+          });
+        callback(null, res.value)
+    } catch (err) {
+        callback(err);
+    }
+}
+
 module.exports.getOrdersByName = async (name, callback) => {
-    const query = {name};
-    await Order.find(query, callback);
+    await Order.find({name}, callback);
 }
 
 module.exports.getAllOrders = async (callback) => {
-    try {
-        await Order.find({}, callback);
-      } catch (err) {
-        throw err;
-      }
+    await Order.find({}, callback);
 }
 
 module.exports.getOrdersBySearch = async (term, callback) => {
-    try {
-        await Order.find({$or: [
-            { name: { $regex: term, $options: "i" } },
-            { email: { $regex: term, $options: "i" } },
-            { location: { $regex: term, $options: "i" } },
-            { description: { $regex: term, $options: "i" } }
-        ] }, callback);
-      } catch (err) {
-        throw err;
-      }
+    await Order.find({$or: [
+        { name: { $regex: term, $options: "i" } },
+        { email: { $regex: term, $options: "i" } },
+        { location: { $regex: term, $options: "i" } },
+        { description: { $regex: term, $options: "i" } }
+    ] }, callback);
 }
 
 module.exports.addOrder = async (newOrder, callback) => {
-    try { await newOrder.save(callback) } 
-    catch (err) {
-        throw err;
-    }
+    await newOrder.save(callback);
 }
