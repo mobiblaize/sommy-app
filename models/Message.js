@@ -42,12 +42,11 @@ module.exports.getMessagesBySearch = async (term, callback) => {
         { name: { $regex: term, $options: "i" } },
         { email: { $regex: term, $options: "i" } },
         { message: { $regex: term, $options: "i" } }
-    ] }, callback);
+    ] }, callback).sort({ date: 'desc' });
 }
-    
 
-module.exports.getAllMessages = async (callback) => {
-    await Message.find({}, callback);
+module.exports.getAllMessages = async (size, callback) => {
+    await Message.find({ }, callback).sort({ date: 'desc' }).skip(size).limit(5);
 }
 
 module.exports.addMessage = async (newMessage, callback) => {

@@ -65,8 +65,8 @@ module.exports.getOrdersByName = async (name, callback) => {
     await Order.find({name}, callback);
 }
 
-module.exports.getAllOrders = async (callback) => {
-    await Order.find({}, callback);
+module.exports.getOrders = async (size, callback) => {
+    await Order.find({}, callback).sort({ date: 'desc' }).skip(size).limit(5);
 }
 
 module.exports.getOrdersBySearch = async (term, callback) => {
@@ -75,7 +75,7 @@ module.exports.getOrdersBySearch = async (term, callback) => {
         { email: { $regex: term, $options: "i" } },
         { location: { $regex: term, $options: "i" } },
         { description: { $regex: term, $options: "i" } }
-    ] }, callback);
+    ] }, callback).sort({ date: 'desc' });
 }
 
 module.exports.addOrder = async (newOrder, callback) => {

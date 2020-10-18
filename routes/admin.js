@@ -64,8 +64,8 @@ router.post('/login', (req, res, next) => {
 });
 
 //Get order list
-router.get('/orders', passport.authenticate('jwt', { session: false }), (req, res) => 
-    Order.getAllOrders((err, orders) => {
+router.post('/orders', passport.authenticate('jwt', { session: false }), (req, res) => 
+    Order.getOrders(req.body.size, (err, orders) => {
         if (err) {
             throw err;
         } else {
@@ -96,15 +96,15 @@ router.post('/orders/delivered', passport.authenticate('jwt', { session: false }
 })
 
 //Get Message list
-router.get('/messages', passport.authenticate('jwt', { session: false }), (req, res) => 
-    Message.getAllMessages((err, messages) => {
+router.post('/messages', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Message.getAllMessages( req.body.size, (err, messages) => {
         if (err) {
             return res.json({ err });
         } else {
             return res.json({ messages });
         }
     })
-)
+});
 
 router.post('/messages/search', passport.authenticate('jwt', { session: false }), (req, res) => {
     let term = req.body.query;

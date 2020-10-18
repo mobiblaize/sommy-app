@@ -44,7 +44,7 @@ module.exports.getPostsBytitle = async (title, callback) => {
 
 module.exports.getAllPosts = async (callback) => {
     try {
-        await Post.find({}, callback);
+        await Post.find({}, callback).sort({ date: 'desc' });
       } catch (err) {
         callback(err)
       }
